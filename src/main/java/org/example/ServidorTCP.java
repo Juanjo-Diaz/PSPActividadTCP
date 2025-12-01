@@ -11,22 +11,22 @@ public class ServidorTCP {
     public static void main(String[] args) {
         AtomicInteger contadorClientes = new AtomicInteger(1);
         try (ServerSocket socketServidor = new ServerSocket(Puerto)) {
-            System.out.println("[SERVIDOR] Servidor TCP del Ahorcado escuchando en puerto " + Puerto + " (Ctrl+C para detener) ...");
+            System.out.println("Escuchando puerto: " + Puerto);
             while (true) {
                 try {
                     Socket skCliente = socketServidor.accept();
                     int id = contadorClientes.getAndIncrement();
                     String nombreHilo = "Cliente-" + id;
-                    System.out.println("[SERVIDOR] Conexión aceptada de " + skCliente.getInetAddress().getHostAddress() + ":" + skCliente.getPort() + " -> " + nombreHilo);
+                    System.out.println("Conexión aceptada de " + skCliente.getInetAddress().getHostAddress() + ":" + skCliente.getPort() + " -> " + nombreHilo);
                     // Lanzamos un hilo por cliente
                     HiloSocket hilo = new HiloSocket(skCliente, nombreHilo);
                     hilo.start();
                 } catch (IOException e) {
-                    System.err.println("[SERVIDOR] Error aceptando cliente: " + e.getMessage());
+                    System.err.println("Error aceptando cliente: " + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            System.err.println("[SERVIDOR] Error en el servidor: " + e.getMessage());
+            System.err.println("Error en el servidor: " + e.getMessage());
         }
     }
 }

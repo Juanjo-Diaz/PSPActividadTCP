@@ -16,21 +16,18 @@ public class ClienteTCP {
              DataOutputStream out = new DataOutputStream(sCliente.getOutputStream());
              Scanner sc = new Scanner(System.in)) {
 
-            boolean jugando = true;
             String estadoActual = "";
             int fallos = 0;
 
-            while (jugando) {
+            while (true) {
                 String msg = in.readUTF();
                 if (msg == null) break;
-
                 String[] partes = msg.split(":", 4);
                 String tipo = partes[0];
                 switch (tipo) {
                     case "START": {
                         estadoActual = partes.length > 1 ? partes[1] : "";
                         fallos = partes.length > 2 ? parseIntSafe(partes[2]) : 0;
-                        System.out.println("Bienvenido al Ahorcado!");
                         System.out.println("Palabra: " + estadoActual + " | Fallos: " + fallos + "/3");
                         break;
                     }
@@ -46,21 +43,17 @@ public class ClienteTCP {
                         String palabra = partes.length > 1 ? partes[1] : "";
                         fallos = partes.length > 2 ? parseIntSafe(partes[2]) : fallos;
                         System.out.println("¡Enhorabuena! Has acertado la palabra: " + palabra + " | Fallos: " + fallos);
-                        jugando = false;
                         break;
                     }
                     case "LOSE": {
                         String palabra = partes.length > 1 ? partes[1] : "";
                         fallos = partes.length > 2 ? parseIntSafe(partes[2]) : fallos;
                         System.out.println("Has perdido. La palabra era: " + palabra + " | Fallos: " + fallos);
-                        jugando = false;
                         break;
                     }
                     default:
                         System.out.println("Mensaje desconocido del servidor: " + msg);
                 }
-
-                if (!jugando) break;
 
                 System.out.print("Introduce una letra (solo 1 carácter): ");
                 String entrada = sc.nextLine();

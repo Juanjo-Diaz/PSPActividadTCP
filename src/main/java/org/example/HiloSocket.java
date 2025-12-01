@@ -22,15 +22,15 @@ public class HiloSocket extends Thread{
              DataOutputStream out = new DataOutputStream(skCliente.getOutputStream())) {
 
             // Preparar palabra aleatoria por cliente
-            String[] palabras = {"java", "socket", "concurrencia", "hilo", "servidor", "cliente", "ahorcado", "maven", "puerto", "protocolo"};
+            String[] palabras = {"almendra", "pepino", "monitor", "hilo", "servidor", "cliente", "calcetin", "pepe", "psp", "string"};
             String palabra = palabras[new Random().nextInt(palabras.length)].toLowerCase();
             char[] estado = new char[palabra.length()];
-            Arrays.fill(estado, '_');
+            Arrays.fill(estado, '*');
             Set<Character> usadas = new HashSet<>();
             int fallos = 0;
             final int maxFallos = 3;
 
-            System.out.println("[" + getName() + "] Palabra generada: " + palabra);
+            System.out.println(getName() + " Palabra generada: " + palabra);
 
             // Mensaje inicial al cliente
             out.writeUTF("START:" + new String(estado) + ":" + fallos);
