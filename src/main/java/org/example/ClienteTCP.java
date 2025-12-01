@@ -18,8 +18,9 @@ public class ClienteTCP {
 
             String estadoActual = "";
             int fallos = 0;
+            boolean jugando = true;
+            while (jugando) {
 
-            while (true) {
                 String msg = in.readUTF();
                 if (msg == null) break;
                 String[] partes = msg.split(":", 4);
@@ -43,19 +44,18 @@ public class ClienteTCP {
                         String palabra = partes.length > 1 ? partes[1] : "";
                         fallos = partes.length > 2 ? parseIntSafe(partes[2]) : fallos;
                         System.out.println("¡Enhorabuena! Has acertado la palabra: " + palabra + " | Fallos: " + fallos);
+                        jugando = false;
                         break;
                     }
                     case "LOSE": {
                         String palabra = partes.length > 1 ? partes[1] : "";
                         fallos = partes.length > 2 ? parseIntSafe(partes[2]) : fallos;
                         System.out.println("Has perdido. La palabra era: " + palabra + " | Fallos: " + fallos);
+                        jugando = false;
                         break;
                     }
-                    default:
-                        System.out.println("Mensaje desconocido del servidor: " + msg);
                 }
-
-                System.out.print("Introduce una letra (solo 1 carácter): ");
+                if(jugando){System.out.print("Introduce una letra (solo 1 carácter): ");}
                 String entrada = sc.nextLine();
                 // Enviar tal cual; el servidor validará si es 1 carácter
                 out.writeUTF(entrada);
@@ -66,6 +66,6 @@ public class ClienteTCP {
     }
 
     private static int parseIntSafe(String s) {
-        try { return Integer.parseInt(s.trim()); } catch (Exception ignored) { return 0; }
+        try { return Integer.parseInt(s.trim()); } catch (Exception e) { return 0; }
     }
 }

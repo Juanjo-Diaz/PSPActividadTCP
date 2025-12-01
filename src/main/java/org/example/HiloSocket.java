@@ -22,10 +22,10 @@ public class HiloSocket extends Thread{
              DataOutputStream out = new DataOutputStream(skCliente.getOutputStream())) {
 
             // Preparar palabra aleatoria por cliente
-            String[] palabras = {"almendra", "pepino", "monitor", "hilo", "servidor", "cliente", "calcetin", "pepe", "psp", "string"};
-            String palabra = palabras[new Random().nextInt(palabras.length)].toLowerCase();
-            char[] estado = new char[palabra.length()];
-            Arrays.fill(estado, '*');
+            String[] palabras = {"almendra", "pepino", "monitor", "hilo", "servidor", "cliente", "calcetín", "pepe", "psp", "string"};
+            String palabra = palabras[new Random().nextInt(palabras.length)];
+            char[] secreto = new char[palabra.length()];
+            Arrays.fill(secreto, '*');
             Set<Character> usadas = new HashSet<>();
             int fallos = 0;
             final int maxFallos = 3;
@@ -33,19 +33,18 @@ public class HiloSocket extends Thread{
             System.out.println(getName() + " Palabra generada: " + palabra);
 
             // Mensaje inicial al cliente
-            out.writeUTF("START:" + new String(estado) + ":" + fallos);
+            out.writeUTF("START:" + new String(secreto) + ":" + fallos);
 
-            boolean terminado = false;
-            while (!terminado) {
-                String guess = in.readUTF();
-                if (guess == null) break;
-                String original = guess;
-                guess = guess.trim().toLowerCase();
+            while (true) {
+                String intento = in.readUTF();
+                if (intento == null) break;
+                String original = intento;
+                intento = intento.trim();
 
                 char letra;
-                boolean valido = (guess.length() == 1);
+                boolean valido = (intento.length() == 1);
                 if (valido) {
-                    letra = guess.charAt(0);
+                    letra = intento.charAt(0);
                 } else {
                     // cualquier entrada con más de 1 carácter cuenta como fallo
                     letra = '\0';
@@ -59,13 +58,13 @@ public class HiloSocket extends Thread{
                     System.out.println("[" + getName() + "] " + mensajeTurno + " | Fallos=" + fallos);
                 } else if (usadas.contains(letra)) {
                     mensajeTurno = "Letra ya usada: '" + letra + "'.";
-                    System.out.println("[" + getName() + "] Repetida '" + letra + "' | Estado=" + String.valueOf(estado) + " | Fallos=" + fallos);
+                    System.out.println("[" + getName() + "] Repetida '" + letra + "' | Estado=" + String.valueOf(secreto) + " | Fallos=" + fallos);
                 } else {
                     usadas.add(letra);
                     int aciertosEnEsteTurno = 0;
                     for (int i = 0; i < palabra.length(); i++) {
-                        if (palabra.charAt(i) == letra && estado[i] == '_') {
-                            estado[i] = letra;
+                        if (palabra.charAt(i) == letra && secreto[i] == '*') {
+                            secreto[i] = letra;
                             aciertosEnEsteTurno++;
                         }
                     }
@@ -76,27 +75,27 @@ public class HiloSocket extends Thread{
                         fallos++;
                         mensajeTurno = "Fallaste. La letra '" + letra + "' no está.";
                     }
-                    System.out.println("[" + getName() + "] Intento='" + letra + "' => " + (acierto ? "ACIERTA" : "FALLA") + " | Estado=" + String.valueOf(estado) + " | Fallos=" + fallos);
+                    System.out.println("[" + getName() + "] Intento='" + letra + "' => " + (acierto ? "ACIERTA" : "FALLA") + " | Estado=" + String.valueOf(secreto) + " | Fallos=" + fallos);
                 }
 
                 // Comprobar fin de juego
-                if (String.valueOf(estado).equals(palabra)) {
+                if (String.valueOf(secreto).equals(palabra)) {
                     out.writeUTF("WIN:" + palabra + ":" + fallos);
                     System.out.println("[" + getName() + "] ¡Ha ganado! Palabra=" + palabra + ", Fallos=" + fallos);
-                    terminado = true;
+
                 } else if (fallos >= maxFallos) {
                     out.writeUTF("LOSE:" + palabra + ":" + fallos);
-                    System.out.println("[" + getName() + "] ¡Ha perdido! Palabra=" + palabra + ", Fallos=" + fallos);
-                    terminado = true;
+                    System.out.println("Has fallado: Palabra=" + palabra + ", Fallos=" + fallos);
+
                 } else {
-                    out.writeUTF("STATE:" + new String(estado) + ":" + fallos + ":" + mensajeTurno);
+                    out.writeUTF("STATE:" + new String(secreto) + ":" + fallos + ":" + mensajeTurno);
                 }
             }
         } catch (Exception e) {
-            System.err.println("[" + getName() + "] Error: " + e.getMessage());
+            System.err.println(e.getMessage());
         } finally {
             try { skCliente.close(); } catch (Exception ignored) {}
-            System.out.println("[" + getName() + "] desconectado");
+            System.out.println(getName() + " desconectado");
         }
     }
 }
