@@ -2,7 +2,7 @@ package org.example;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;-
+import java.net.Socket;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ServidorTCP {
